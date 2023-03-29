@@ -1,0 +1,27 @@
+on:
+  push:
+    branches:
+      - master
+
+name: Deploy to Amazon ECS
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-20.04
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+        
+    - name: Docker Login
+      uses: azure/docker-login@v1
+      with:
+        login-server: ghcr.io
+        username: $GITHUB_ACTOR
+        password: ${{ secrets.GH_TOKEN }}
+        
+    - name: Build image and push to github registry
+      id: build-push-image
+      run: |
+        sh make_image.sh
